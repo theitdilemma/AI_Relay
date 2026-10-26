@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.1 — 2026-10-26
+
+- Fixes `Uncaught (in promise) Error: No current window` when opening the dashboard during installation or update.
+- Uses the toolbar click's window explicitly, with a new normal-window fallback when Chrome has no usable current window.
+- Handles background event failures and rejected state saves without unhandled promise rejections.
+- Adds regression coverage for missing/closed windows and failed dashboard opening.
+
 ## 0.4.0 — 2026-10-26
 
 - Adds `#userInput#`: either AI can ask a question and pause the relay; the dashboard sends your reply back to that AI and resumes without resetting the forward count.

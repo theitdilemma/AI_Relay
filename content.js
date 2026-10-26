@@ -1,5 +1,5 @@
 (() => {
-  const build = '0.4.0';
+  const build = '0.4.1';
   const a = window.AIRelayAdapter;
   if (!a || window.__aiRelayInstalled) return;
   window.__aiRelayInstalled = true;

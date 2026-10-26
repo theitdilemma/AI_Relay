@@ -34,7 +34,9 @@ These rules apply to the rest of this conversation. This introduction is sent on
 let state = { ...DEFAULT };
 const save = () => chrome.storage.local.set({ relayState: state });
 const emit = () => {
-  save();
+  Promise.resolve(save()).catch((e) =>
+    console.warn('Could not save AI Relay state:', e.message),
+  );
   chrome.runtime.sendMessage({ type: 'STATE', state }).catch(() => {});
 };
 const nameFor = (tabId) =>
@@ -158,24 +160,50 @@ async function stop(reason = null) {
 const ready = chrome.storage.local.get('relayState').then(({ relayState }) => {
   if (relayState) state = { ...DEFAULT, ...relayState };
 });
+async function openDashboard(windowId) {
+  const url = chrome.runtime.getURL('dashboard.html');
+  try {
+    const options = { url };
+    if (Number.isInteger(windowId) && windowId >= 0)
+      options.windowId = windowId;
+    await chrome.tabs.create(options);
+  } catch (e) {
+    if (
+      !/No current window|No window with id|Invalid window ID/i.test(e.message)
+    )
+      throw e;
+    // Installation can wake the worker before Chrome has a normal window.
+    await chrome.windows.create({ url, type: 'normal' });
+  }
+}
+function reportBackgroundError(e) {
+  state.error = `AI Relay background action failed: ${e.message}`;
+  emit();
+}
 chrome.runtime.onInstalled.addListener(() =>
-  ready.then(async () => {
-    await stop();
-    chrome.tabs.create({ url: chrome.runtime.getURL('dashboard.html') });
-  }),
+  ready
+    .then(async () => {
+      await stop();
+      await openDashboard();
+    })
+    .catch(reportBackgroundError),
 );
-chrome.runtime.onStartup.addListener(() => ready.then(stop));
-chrome.action.onClicked.addListener(() =>
-  chrome.tabs.create({ url: chrome.runtime.getURL('dashboard.html') }),
+chrome.runtime.onStartup.addListener(() =>
+  ready.then(stop).catch(reportBackgroundError),
+);
+chrome.action.onClicked.addListener((tab) =>
+  ready.then(() => openDashboard(tab?.windowId)).catch(reportBackgroundError),
 );
 chrome.tabs.onRemoved.addListener((id) => {
-  ready.then(() => {
-    if (id === state.chatgptTab || id === state.claudeTab) {
-      if (id === state.chatgptTab) state.chatgptTab = null;
-      else state.claudeTab = null;
-      stop();
-    }
-  });
+  ready
+    .then(async () => {
+      if (id === state.chatgptTab || id === state.claudeTab) {
+        if (id === state.chatgptTab) state.chatgptTab = null;
+        else state.claudeTab = null;
+        await stop();
+      }
+    })
+    .catch(reportBackgroundError);
 });
 chrome.runtime.onMessage.addListener((msg, sender, respond) => {
   (async () => {
