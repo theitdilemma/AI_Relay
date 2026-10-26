@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AI Relay</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <span class="logo">⇄</span>
+        <div>
+          <h1>AI Relay <small>v0.2</small></h1>
+          <p>Two models. One conversation. You're in control.</p>
+        </div>
+      </div>
+      <span id="status" class="pill">Paused</span>
+    </header>
+    <main>
+      <section class="panel setup">
+        <h2>Connect browser tabs</h2>
+        <p class="hint">
+          Open ChatGPT and Claude in separate Chrome tabs and sign in. Select
+          them below.
+        </p>
+        <div class="fields">
+          <label>ChatGPT tab<select id="chatgpt"></select></label
+          ><label>Claude tab<select id="claude"></select></label>
+        </div>
+        <div class="toolbar">
+          <button id="refresh" class="secondary">Refresh tabs</button
+          ><button id="openChat" class="secondary">Open ChatGPT ↗</button
+          ><button id="openClaude" class="secondary">Open Claude ↗</button>
+        </div>
+        <div class="fields settings">
+          <label
+            >Relay mode<select id="mode">
+              <option value="automatic">Automatic relay (default)</option>
+              <option value="manual">Manual approval</option>
+            </select></label
+          ><label
+            >Maximum forwards<input
+              id="maxRounds"
+              type="number"
+              min="1"
+              max="30"
+              value="8" /></label
+          ><label class="unlimited-option"
+            ><input id="unlimited" type="checkbox" /> Unlimited — continue until
+            paused</label
+          >
+        </div>
+      </section>
+      <section class="panel">
+        <h2>Start a conversation</h2>
+        <textarea
+          id="topic"
+          rows="3"
+          placeholder="Give ChatGPT a topic, problem, or question. Its response can be relayed to Claude."
+        ></textarea>
+        <div class="toolbar">
+          <button id="start" class="primary">▶ Start</button
+          ><button id="stop" class="secondary">■ Stop / Pause</button
+          ><button id="reset" class="danger">Reset history</button
+          ><span id="rounds" class="hint"></span>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="sectionhead">
+          <h2>Conversation</h2>
+          <button id="export" class="secondary">Export Markdown ↓</button>
+        </div>
+        <div id="history" class="history">
+          <div class="empty">Your conversation will appear here.</div>
+        </div>
+        <div id="pending" class="pending" hidden>
+          <strong>Response waiting for approval</strong>
+          <p id="pendingLabel"></p>
+          <button id="forward" class="primary">Forward to other AI →</button>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>Interject</h2>
+        <p class="hint">
+          Interjecting pauses the relay to avoid crossing messages.
+        </p>
+        <textarea
+          id="interjection"
+          rows="2"
+          placeholder="Add your own thought, correction, or instruction..."
+        ></textarea>
+        <div class="toolbar">
+          <select id="destination">
+            <option value="both">Both AIs</option>
+            <option value="ChatGPT">ChatGPT only</option>
+            <option value="Claude">Claude only</option></select
+          ><button id="interject" class="primary">Send interjection</button>
+        </div>
+      </section>
+      <div id="error" role="alert" hidden></div>
+      <footer>
+        Runs locally in your browser • No external servers • Website changes can
+        break capture or sending • Do not relay sensitive information without
+        reviewing it.
+      </footer>
+    </main>
+    <script src="dashboard.js"></script>
+  </body>
+</html>

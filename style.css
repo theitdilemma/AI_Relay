@@ -1,0 +1,258 @@
+:root {
+  color-scheme: dark;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    sans-serif;
+  background: #0b1020;
+  color: #e8edf8;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+header {
+  border-bottom: 1px solid #27334a;
+  background: #111a2e;
+  padding: 24px max(24px, calc((100vw - 1050px) / 2));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.logo {
+  display: grid;
+  place-items: center;
+  background: #4467ec;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  font-size: 34px;
+  font-weight: 700;
+}
+h1 {
+  font-size: 25px;
+  margin: 0;
+}
+h1 small {
+  font-size: 12px;
+  color: #9eadd0;
+  font-weight: 500;
+}
+header p {
+  margin: 4px 0 0;
+  color: #a9b6d0;
+  font-size: 13px;
+}
+.pill {
+  background: #29344b;
+  border-radius: 30px;
+  padding: 8px 14px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.pill.live {
+  background: #135d48;
+  color: #b0f4d7;
+}
+main {
+  max-width: 1050px;
+  margin: 28px auto;
+  padding: 0 24px 45px;
+  display: grid;
+  gap: 18px;
+}
+.panel {
+  border: 1px solid #293650;
+  background: #131d31;
+  border-radius: 17px;
+  padding: 23px;
+}
+h2 {
+  font-size: 17px;
+  margin: 0 0 13px;
+}
+.hint {
+  color: #a5b2c9;
+  font-size: 13px;
+}
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 18px 0;
+}
+.fields label {
+  display: grid;
+  gap: 8px;
+  color: #cbd5e9;
+  font-size: 13px;
+}
+select,
+input,
+textarea {
+  background: #0c1527;
+  color: #eaf0ff;
+  border: 1px solid #35435e;
+  border-radius: 9px;
+  padding: 12px;
+  font: inherit;
+  width: 100%;
+  outline: none;
+}
+textarea {
+  resize: vertical;
+  min-height: 75px;
+}
+select:focus,
+input:focus,
+textarea:focus {
+  border-color: #7e9bff;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 13px;
+}
+.toolbar select {
+  width: auto;
+  min-width: 155px;
+}
+button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 9px;
+  padding: 11px 16px;
+  font-weight: 650;
+  color: #fff;
+}
+button:hover {
+  filter: brightness(1.13);
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.primary {
+  background: #486beb;
+}
+.secondary {
+  background: #2c3953;
+}
+.danger {
+  background: #563044;
+}
+.settings {
+  margin-bottom: 0;
+}
+.sectionhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.history {
+  background: #0c1527;
+  border: 1px solid #293650;
+  border-radius: 12px;
+  min-height: 210px;
+  max-height: 470px;
+  overflow-y: auto;
+  padding: 16px;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+}
+.empty {
+  color: #8797b5;
+  text-align: center;
+  padding: 60px 0;
+}
+.entry {
+  background: #1b2941;
+  padding: 13px 15px;
+  border-radius: 12px;
+  border-left: 3px solid #7391fc;
+}
+.entry.claude {
+  border-color: #d69a68;
+}
+.entry.you {
+  border-color: #55c7a4;
+}
+.entry .meta {
+  display: flex;
+  justify-content: space-between;
+  color: #aebddb;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.entry .body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.pending {
+  margin-top: 14px;
+  border: 1px solid #9d7e43;
+  border-radius: 10px;
+  padding: 16px;
+  background: #332b20;
+}
+.pending p {
+  color: #e0c9a1;
+  font-size: 13px;
+}
+#error {
+  border: 1px solid #a44e5c;
+  background: #4b222e;
+  color: #ffccd3;
+  border-radius: 10px;
+  padding: 15px;
+}
+footer {
+  text-align: center;
+  color: #7f8faa;
+  font-size: 12px;
+  line-height: 1.6;
+}
+@media (max-width: 650px) {
+  .fields {
+    grid-template-columns: 1fr;
+  }
+  header {
+    padding: 20px;
+  }
+  .panel {
+    padding: 16px;
+  }
+  .sectionhead {
+    align-items: flex-start;
+    gap: 8px;
+  }
+  main {
+    padding: 0 12px;
+  }
+}
+.fields .unlimited-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.unlimited-option input {
+  width: auto;
+}
+input:disabled {
+  opacity: 0.5;
+}
