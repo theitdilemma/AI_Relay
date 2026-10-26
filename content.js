@@ -1,5 +1,5 @@
 (() => {
-  const build = '0.3.0';
+  const build = '0.3.1';
   const a = window.AIRelayAdapter;
   if (!a || window.__aiRelayInstalled) return;
   window.__aiRelayInstalled = true;
@@ -50,6 +50,21 @@
     return null;
   }
   const textOf = (el) => (el?.innerText || el?.textContent || '').trim();
+  function responseText(el) {
+    const raw = textOf(el);
+    if (!/#stop#/i.test(raw) || !el?.cloneNode) return raw;
+    // Some message wrappers include copy/rating controls, timestamps and
+    // screen-reader labels. Those must not conceal a standalone stop marker.
+    // Only normalize the marker; preserve the original formatting of replies.
+    const copy = el.cloneNode(true);
+    for (const control of copy.querySelectorAll(
+      'button, [role="toolbar"], [role="status"], time, svg, .sr-only, [aria-hidden="true"]',
+    ))
+      control.remove();
+    return (copy.textContent || '').trim().toLowerCase() === '#stop#'
+      ? '#stop#'
+      : raw;
+  }
   let last = '',
     changedAt = 0,
     reported = '',
@@ -73,7 +88,7 @@
   function scan() {
     const nodes = all(a.messages).filter((el) => textOf(el));
     const latest = nodes[nodes.length - 1];
-    const value = textOf(latest);
+    const value = responseText(latest);
     if (value !== last) {
       last = value;
       changedAt = Date.now();

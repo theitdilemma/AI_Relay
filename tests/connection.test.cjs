@@ -180,7 +180,11 @@ test('first manual forward includes original prompt; later forwards include only
   assert.match(page.sent[0].text, /Original question/);
   page.evaluate('state.pending={from:"ChatGPT",text:"Second reply"}');
   await page.request({ type: 'FORWARD' });
-  assert.equal(page.sent[1].text, 'Message from ChatGPT:\n\nSecond reply');
+  assert.ok(
+    page.sent[1].text.startsWith('Message from ChatGPT:\n\nSecond reply'),
+  );
+  assert.ok(!page.sent[1].text.includes('Original question'));
+  assert.match(page.sent[1].text, /Relay stopping rule:.*#stop#/);
 });
 test('failed first forward retains original context for retry', async () => {
   const page = setup({

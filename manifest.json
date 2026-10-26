@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "AI Relay",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Human-moderated local relay between ChatGPT and Claude browser tabs. No API keys.",
   "permissions": ["tabs", "storage", "scripting"],
   "host_permissions": ["https://chatgpt.com/*", "https://claude.ai/*"],

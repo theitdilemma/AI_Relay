@@ -13,7 +13,7 @@ const DEFAULT = {
   stopReason: null,
 };
 const STOP_RULE =
-  'When the discussion is complete, or further progress requires human input, respond with exactly #stop# and nothing else.';
+  'When the discussion is complete, you agree no further debate is needed, or further progress requires human input, respond with exactly #stop# and nothing else. Do not exchange closing acknowledgments or repeat that you are done. Otherwise continue with a useful contribution.';
 let state = { ...DEFAULT };
 const save = () => chrome.storage.local.set({ relayState: state });
 const emit = () => {
@@ -33,7 +33,7 @@ const limitReached = () =>
 const forwardText = (from, text) =>
   from === 'ChatGPT' && !state.claudeHasContext && state.originalPrompt
     ? `Original prompt from the user:\n\n${state.originalPrompt}\n\nChatGPT's response:\n\n${text}\n\nContinue the discussion using the original prompt and this response as context.\n\nRelay stopping rule: ${STOP_RULE}`
-    : `Message from ${from}:\n\n${text}`;
+    : `Message from ${from}:\n\n${text}\n\nRelay stopping rule: ${STOP_RULE}`;
 async function forwardTo(from, text) {
   await sendTo(targetFor(from), forwardText(from, text));
   if (from === 'ChatGPT') state.claudeHasContext = true;

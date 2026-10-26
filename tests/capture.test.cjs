@@ -113,3 +113,48 @@ test('keeps legacy ChatGPT reply capture working', () => {
     'Legacy reply',
   );
 });
+test('recognizes a standalone stop marker surrounded by message UI controls', () => {
+  const page = setup();
+  page.arm();
+  page.nodes.set('[data-markdown-text-style="assistant-message"]', [
+    {
+      innerText: 'ChatGPT said: #STOP# Copy Rate response just now',
+      cloneNode: () => {
+        const copy = {
+          textContent: 'ChatGPT said: #STOP# Copy Rate response just now',
+        };
+        copy.querySelectorAll = () => [
+          {
+            remove() {
+              copy.textContent = ' \n#STOP#\n ';
+            },
+          },
+        ];
+        return copy;
+      },
+    },
+  ]);
+  page.tick();
+  page.tick(2500);
+  assert.equal(
+    page.notifications.find((m) => m.type === 'RESPONSE').text,
+    '#stop#',
+  );
+});
+test('does not turn a marker quoted in an ordinary reply into a stop signal', () => {
+  const page = setup();
+  page.arm();
+  const text = 'Do not use #stop# until the discussion is complete.';
+  page.nodes.set('[data-markdown-text-style="assistant-message"]', [
+    {
+      innerText: text,
+      cloneNode: () => ({ textContent: text, querySelectorAll: () => [] }),
+    },
+  ]);
+  page.tick();
+  page.tick(2500);
+  assert.equal(
+    page.notifications.find((m) => m.type === 'RESPONSE').text,
+    text,
+  );
+});

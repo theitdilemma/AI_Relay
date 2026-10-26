@@ -31,6 +31,8 @@ function render(s) {
       ? '■ Finished'
       : 'Ⅱ Paused';
   $('status').title = s.stopReason || '';
+  $('completion').hidden = !s.stopReason;
+  $('completion').textContent = s.stopReason || '';
   $('status').classList.toggle('live', !!s.running);
   $('rounds').textContent =
     s.maxRounds === null

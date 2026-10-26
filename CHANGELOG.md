@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1 — 2026-10-26
+
+- Reinforces the `#stop#` instruction on every forwarded turn to prevent closing-acknowledgment loops.
+- Recognizes a standalone stop marker even when message wrappers include controls, timestamps, or screen-reader labels.
+- Shows the completion reason in the conversation panel. A stop signal from either model stops forwarding and preserves history.
+- Keeps exact matching: mentioning or quoting `#stop#` inside an ordinary response does not stop the relay.
+
 ## 0.3.0 — 2026-10-26
 
 First shareable testing release.
