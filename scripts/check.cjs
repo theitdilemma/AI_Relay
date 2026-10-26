@@ -29,6 +29,21 @@ assert.deepEqual(manifest.host_permissions, [
   'https://claude.ai/*',
 ]);
 const html = read('dashboard.html');
+for (const [size, file] of Object.entries(manifest.icons || {})) {
+  const png = fs.readFileSync(path.join(root, file));
+  assert.equal(png.readUInt32BE(16), Number(size), `Wrong icon width: ${file}`);
+  assert.equal(
+    png.readUInt32BE(20),
+    Number(size),
+    `Wrong icon height: ${file}`,
+  );
+}
+for (const match of html.matchAll(/(?:src|href)="([^":]+)"/g)) {
+  assert.ok(
+    fs.existsSync(path.join(root, match[1])),
+    `Missing dashboard asset: ${match[1]}`,
+  );
+}
 for (const match of read('dashboard.js').matchAll(/\$\(['"]([^'"]+)['"]\)/g)) {
   assert.ok(
     html.includes(`id="${match[1]}"`),

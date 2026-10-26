@@ -1,5 +1,5 @@
 (() => {
-  const build = '0.3.1';
+  const build = '0.4.0';
   const a = window.AIRelayAdapter;
   if (!a || window.__aiRelayInstalled) return;
   window.__aiRelayInstalled = true;
@@ -52,7 +52,7 @@
   const textOf = (el) => (el?.innerText || el?.textContent || '').trim();
   function responseText(el) {
     const raw = textOf(el);
-    if (!/#stop#/i.test(raw) || !el?.cloneNode) return raw;
+    if (!/#(?:stop|userinput)#/i.test(raw) || !el?.cloneNode) return raw;
     // Some message wrappers include copy/rating controls, timestamps and
     // screen-reader labels. Those must not conceal a standalone stop marker.
     // Only normalize the marker; preserve the original formatting of replies.
@@ -61,9 +61,16 @@
       'button, [role="toolbar"], [role="status"], time, svg, .sr-only, [aria-hidden="true"]',
     ))
       control.remove();
-    return (copy.textContent || '').trim().toLowerCase() === '#stop#'
-      ? '#stop#'
-      : raw;
+    const clean = (copy.textContent || '').trim();
+    if (clean.toLowerCase() === '#stop#') return '#stop#';
+    if (clean.toLowerCase() === '#userinput#') return '#userInput#';
+    // Preserve paragraph boundaries for questions whose last line is a flag.
+    const paragraphs = [...copy.querySelectorAll('p, pre, li')]
+      .map(textOf)
+      .filter(Boolean);
+    if (paragraphs.length && paragraphs.at(-1).toLowerCase() === '#userinput#')
+      return paragraphs.join('\n\n');
+    return raw;
   }
   let last = '',
     changedAt = 0,
@@ -210,6 +217,16 @@
         platform: a.name,
         composer: !!getComposer(),
         messages: all(a.messages).length,
+        conversationKey: location.origin + location.pathname,
+        introPresent: [
+          ...document.querySelectorAll(
+            'main article, [data-message-author-role], [data-chatgpt-selection-message-id], [data-testid="user-message"]',
+          ),
+        ].some((el) =>
+          (el.textContent || '').includes(
+            'AI Relay · Conversation introduction',
+          ),
+        ),
       });
       return;
     }

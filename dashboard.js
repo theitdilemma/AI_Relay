@@ -27,13 +27,28 @@ function render(s) {
   state = s;
   $('status').textContent = s.running
     ? '● Running'
-    : s.stopReason
-      ? '■ Finished'
-      : 'Ⅱ Paused';
+    : s.awaitingInput
+      ? '● Your input needed'
+      : s.stopReason
+        ? '■ Finished'
+        : 'Ⅱ Paused';
   $('status').title = s.stopReason || '';
   $('completion').hidden = !s.stopReason;
   $('completion').textContent = s.stopReason || '';
   $('status').classList.toggle('live', !!s.running);
+  $('status').classList.toggle('waiting', !!s.awaitingInput && !s.running);
+  $('inputRequest').hidden = !s.awaitingInput;
+  $('interjectionPanel').hidden = !!s.awaitingInput;
+  $('inputQuestion').textContent =
+    s.awaitingInput?.question ||
+    'The discussion is paused. Share the information or direction the models need.';
+  $('replyDestination').textContent = s.awaitingInput
+    ? `Reply goes to ${s.awaitingInput.from}, then the relay resumes.`
+    : '';
+  $('sendReply').disabled = s.running;
+  $('messageCount').textContent = s.history.filter(
+    (m) => m.kind !== 'control',
+  ).length;
   $('rounds').textContent =
     s.maxRounds === null
       ? `${s.rounds} forwards · Unlimited`
@@ -43,19 +58,35 @@ function render(s) {
     $('pendingLabel').textContent =
       `${s.pending.from} → ${s.pending.from === 'ChatGPT' ? 'Claude' : 'ChatGPT'}`;
   $('forward').disabled = !s.pending;
-  $('start').disabled = !!s.running;
+  $('start').disabled = !!s.running || !!s.awaitingInput;
+  $('stop').disabled = !s.running;
   const root = $('history');
+  const follow = root.scrollHeight - root.scrollTop - root.clientHeight < 80;
+  const previousScroll = root.scrollTop;
   root.replaceChildren();
   if (!s.history.length) {
     const d = document.createElement('div');
     d.className = 'empty';
-    d.textContent = 'Your conversation will appear here.';
+    const icon = document.createElement('img');
+    icon.src = 'icons/logo.svg';
+    icon.alt = '';
+    const heading = document.createElement('strong');
+    heading.textContent = 'Two perspectives. One thread.';
+    const description = document.createElement('p');
+    description.textContent =
+      'Start with a question on the left. ChatGPT and Claude will work through it together, with you in control.';
+    const tags = document.createElement('div');
+    tags.className = 'empty-tags';
+    tags.textContent =
+      'Explore ideas  ·  Challenge assumptions  ·  Find clarity';
+    d.append(icon, heading, description, tags);
     root.append(d);
   }
   for (const m of s.history) {
     const div = document.createElement('div');
     div.className =
       'entry ' + (m.who === 'Claude' ? 'claude' : m.who === 'You' ? 'you' : '');
+    if (m.kind === 'control') div.classList.add('control');
     const meta = document.createElement('div');
     meta.className = 'meta';
     const who = document.createElement('strong');
@@ -69,7 +100,7 @@ function render(s) {
     div.append(meta, body);
     root.append(div);
   }
-  root.scrollTop = root.scrollHeight;
+  root.scrollTop = follow ? root.scrollHeight : previousScroll;
   if (s.error) error(new Error(s.error));
   else clearError();
 }
@@ -132,6 +163,18 @@ $('reset').onclick = () =>
   safely(async () => {
     if (confirm('Clear AI Relay conversation history?'))
       render(await ask({ type: 'RESET' }));
+  });
+$('sendReply').onclick = () =>
+  safely(async () => {
+    const text = $('userReply').value.trim();
+    if (!text) throw Error('Enter your answer before resuming.');
+    $('sendReply').disabled = true;
+    try {
+      render(await ask({ type: 'USER_REPLY', text }));
+      $('userReply').value = '';
+    } finally {
+      $('sendReply').disabled = !!state?.running;
+    }
   });
 $('forward').onclick = () =>
   safely(async () => render(await ask({ type: 'FORWARD' })));

@@ -158,3 +158,28 @@ test('does not turn a marker quoted in an ordinary reply into a stop signal', ()
     text,
   );
 });
+test('extracts a question and final userInput flag without surrounding message controls', () => {
+  const page = setup();
+  page.arm();
+  const paragraphs = [
+    { textContent: 'What is your budget?' },
+    { textContent: '#userInput#' },
+  ];
+  page.nodes.set('[data-markdown-text-style="assistant-message"]', [
+    {
+      innerText:
+        'Claude responded: What is your budget? #userInput# Copy just now',
+      cloneNode: () => ({
+        textContent: 'What is your budget?#userInput#',
+        querySelectorAll: (selector) =>
+          selector === 'p, pre, li' ? paragraphs : [],
+      }),
+    },
+  ]);
+  page.tick();
+  page.tick(2500);
+  assert.equal(
+    page.notifications.find((m) => m.type === 'RESPONSE').text,
+    'What is your budget?\n\n#userInput#',
+  );
+});

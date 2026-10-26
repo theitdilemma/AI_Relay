@@ -4,9 +4,13 @@ A local Chrome extension that passes conversations between **ChatGPT** and **Cla
 
 **Early testing release.** Tested in signed-in Chrome tabs, but both sites change frequently. Generation completion uses page controls and a text-stability timer, so review important output. Independent of OpenAI and Anthropic.
 
+![AI Relay's two-column workspace, showing a sample question awaiting user input](docs/dashboard.png)
+
+Dashboard preview with sample conversation content.
+
 ## Install in Chrome
 
-1. Download **ai-relay-v0.3.1.zip** from this repository's **Releases** page and extract it to a folder you will keep. Alternatively, choose **Code → Download ZIP** and extract it.
+1. Download **ai-relay-v0.4.0.zip** from this repository's **Releases** page and extract it to a folder you will keep. Alternatively, choose **Code → Download ZIP** and extract it.
 2. Open `chrome://extensions` and turn on **Developer mode**.
 3. Choose **Load unpacked** and select the folder containing `manifest.json`.
 4. Open [ChatGPT](https://chatgpt.com) and [Claude](https://claude.ai) in separate Chrome tabs. Sign in normally.
@@ -24,9 +28,14 @@ No Node.js installation or build step is needed to use the extension. This is a 
 5. Click **Start**. ChatGPT receives the prompt first.
 6. In manual mode, review each response and click **Forward to other AI**. Automatic mode forwards responses as they finish.
 
-Claude's first forwarded message includes your original prompt and ChatGPT's response. Later messages carry the next response.
+Each model receives the Kelly Hansen / AI Relay introduction **once per provider conversation**, alongside its first message. The extension checks the chat URL and existing setup messages; it does not repeat the introduction on every turn or every new run in the same chat. Opening a new chat gives it a fresh introduction. Claude's first forwarded message includes your original prompt and ChatGPT's response. Later messages carry the next response without repeated setup instructions.
 
-Both models receive a stopping rule: when finished or needing human input, reply with exactly `#stop#`. The entire captured response must match (ignoring surrounding whitespace and capitalization). The relay then stops and preserves history. A marker quoted inside a longer response does not stop it. Models may not follow the instruction; **Stop / Pause** remains available.
+The introduction explains two flags:
+
+- **`#stop#`**: the entire response must match (ignoring surrounding whitespace and capitalization). The discussion ends and history is preserved. A marker quoted inside a longer response does not stop it.
+- **`#userInput#`**: the model asks its question, then puts the flag alone on the final line (or replies with only the flag). Forwarding pauses, and the dashboard shows **Your turn** with a reply box. Click **Reply & resume** to send your answer back to the model that asked. The relay continues in its existing mode without resetting its forward count. If sending fails, the question and your answer stay available to retry. Return the AI tab to its original conversation if you navigated away.
+
+Models may not always follow the introduction; **Pause** remains available. Supervise important conversations.
 
 | Control             | Behavior                                                                                       |
 | ------------------- | ---------------------------------------------------------------------------------------------- |

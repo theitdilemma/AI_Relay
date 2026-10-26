@@ -3,108 +3,199 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>AI Relay</title>
+    <title>AI Relay · Conversation workspace</title>
+    <link rel="icon" type="image/png" href="icons/icon-32.png" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <header>
+    <header class="app-header">
       <div class="brand">
-        <span class="logo">⇄</span>
+        <img src="icons/logo.svg" width="40" height="40" alt="" />
         <div>
-          <h1>AI Relay <small>v0.2</small></h1>
-          <p>Two models. One conversation. You're in control.</p>
+          <h1>AI Relay <small>v0.4.0</small></h1>
+          <p>Two perspectives. One conversation.</p>
         </div>
       </div>
-      <span id="status" class="pill">Paused</span>
+      <div class="header-actions">
+        <a
+          href="https://github.com/theitdilemma/AI_Relay"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="github-link"
+          >GitHub <span aria-hidden="true">↗</span></a
+        ><span id="status" class="pill">Ready</span>
+      </div>
     </header>
-    <main>
-      <section class="panel setup">
-        <h2>Connect browser tabs</h2>
-        <p class="hint">
-          Open ChatGPT and Claude in separate Chrome tabs and sign in. Select
-          them below.
+    <main class="workspace">
+      <aside class="sidebar" aria-label="Conversation controls">
+        <section class="panel connections" aria-labelledby="connections-title">
+          <div class="sectionhead">
+            <h2 id="connections-title">Connections</h2>
+            <button
+              id="refresh"
+              class="text-button"
+              title="Refresh available browser tabs"
+            >
+              <span aria-hidden="true">↻</span> Refresh
+            </button>
+          </div>
+          <label class="field"
+            ><span class="field-label"
+              ><span class="model-dot gpt-dot"></span> ChatGPT</span
+            ><select id="chatgpt" aria-label="ChatGPT tab"></select
+          ></label>
+          <label class="field"
+            ><span class="field-label"
+              ><span class="model-dot claude-dot"></span> Claude</span
+            ><select id="claude" aria-label="Claude tab"></select
+          ></label>
+          <div class="open-links">
+            <span>Need a new chat?</span
+            ><button id="openChat" class="text-button">ChatGPT ↗</button
+            ><button id="openClaude" class="text-button">Claude ↗</button>
+          </div>
+        </section>
+        <section class="panel starter" aria-labelledby="start-title">
+          <div class="eyebrow">YOUR NEXT IDEA</div>
+          <h2 id="start-title">Start a conversation</h2>
+          <p class="hint">Give both perspectives something worth exploring.</p>
+          <label class="sr-only" for="topic">Your question or idea</label
+          ><textarea
+            id="topic"
+            rows="7"
+            placeholder="What would you like ChatGPT and Claude to work through?"
+          ></textarea>
+          <p class="micro-copy">
+            <span aria-hidden="true">✦</span> We introduce the models once per
+            chat.
+          </p>
+          <div class="start-actions">
+            <button id="start" class="primary">
+              Start conversation <span aria-hidden="true">→</span></button
+            ><button id="stop" class="secondary" title="Pause the relay">
+              Pause
+            </button>
+          </div>
+        </section>
+        <details class="panel settings" open>
+          <summary>Relay settings</summary>
+          <div class="settings-body">
+            <label class="field"
+              >Forwarding<select id="mode">
+                <option value="automatic">Automatic</option>
+                <option value="manual">Review each response</option>
+              </select></label
+            >
+            <div class="limit-row">
+              <label class="field" for="maxRounds">Maximum forwards</label
+              ><input id="maxRounds" type="number" min="1" max="30" value="8" />
+            </div>
+            <label class="check-label"
+              ><input id="unlimited" type="checkbox" /><span
+                >Unlimited conversation</span
+              ></label
+            >
+            <p class="micro-copy">
+              The relay pauses for your input and ends on <code>#stop#</code>.
+            </p>
+          </div>
+        </details>
+        <p class="local-note">
+          <span class="local-dot" aria-hidden="true"></span> Runs locally in
+          your browser<br /><span>No API keys. No relay server.</span>
         </p>
-        <div class="fields">
-          <label>ChatGPT tab<select id="chatgpt"></select></label
-          ><label>Claude tab<select id="claude"></select></label>
+      </aside>
+      <section class="conversation-panel" aria-labelledby="conversation-title">
+        <div class="conversation-header">
+          <div>
+            <div class="eyebrow">THE SHARED THREAD</div>
+            <h2 id="conversation-title">
+              Conversation <span id="messageCount" class="count-badge">0</span>
+            </h2>
+          </div>
+          <div class="conversation-tools">
+            <button id="export" class="secondary small-button">Export ↓</button
+            ><button id="reset" class="text-button muted">Clear history</button>
+          </div>
         </div>
-        <div class="toolbar">
-          <button id="refresh" class="secondary">Refresh tabs</button
-          ><button id="openChat" class="secondary">Open ChatGPT ↗</button
-          ><button id="openClaude" class="secondary">Open Claude ↗</button>
+        <div class="conversation-meta">
+          <span
+            ><span class="model-dot gpt-dot"></span> ChatGPT
+            <span class="between" aria-hidden="true">⇄</span>
+            <span class="model-dot claude-dot"></span> Claude</span
+          ><span id="rounds">0 forwards</span>
         </div>
-        <div class="fields settings">
-          <label
-            >Relay mode<select id="mode">
-              <option value="automatic">Automatic relay (default)</option>
-              <option value="manual">Manual approval</option>
-            </select></label
-          ><label
-            >Maximum forwards<input
-              id="maxRounds"
-              type="number"
-              min="1"
-              max="30"
-              value="8" /></label
-          ><label class="unlimited-option"
-            ><input id="unlimited" type="checkbox" /> Unlimited — continue until
-            paused</label
-          >
-        </div>
-      </section>
-      <section class="panel">
-        <h2>Start a conversation</h2>
-        <textarea
-          id="topic"
-          rows="3"
-          placeholder="Give ChatGPT a topic, problem, or question. Its response can be relayed to Claude."
-        ></textarea>
-        <div class="toolbar">
-          <button id="start" class="primary">▶ Start</button
-          ><button id="stop" class="secondary">■ Stop / Pause</button
-          ><button id="reset" class="danger">Reset history</button
-          ><span id="rounds" class="hint"></span>
-        </div>
-      </section>
-      <section class="panel">
-        <div class="sectionhead">
-          <h2>Conversation</h2>
-          <button id="export" class="secondary">Export Markdown ↓</button>
-        </div>
-        <div id="history" class="history">
-          <div class="empty">Your conversation will appear here.</div>
-        </div>
-        <p id="completion" class="hint" role="status" hidden></p>
+        <div id="error" role="alert" hidden></div>
+        <div
+          id="history"
+          class="history"
+          aria-label="Conversation history"
+        ></div>
+        <p id="completion" class="completion" role="status" hidden></p>
         <div id="pending" class="pending" hidden>
-          <strong>Response waiting for approval</strong>
-          <p id="pendingLabel"></p>
-          <button id="forward" class="primary">Forward to other AI →</button>
+          <div>
+            <strong>Ready for your review</strong>
+            <p id="pendingLabel"></p>
+          </div>
+          <button id="forward" class="primary">Forward response →</button>
         </div>
+        <section
+          id="inputRequest"
+          class="input-request"
+          aria-labelledby="input-title"
+          hidden
+        >
+          <div class="request-heading">
+            <span class="request-icon" aria-hidden="true">?</span>
+            <div>
+              <div class="eyebrow">YOUR TURN</div>
+              <h3 id="input-title">A little input to move forward</h3>
+            </div>
+          </div>
+          <p id="inputQuestion"></p>
+          <label class="sr-only" for="userReply">Your answer</label
+          ><textarea
+            id="userReply"
+            rows="3"
+            placeholder="Share your answer or direction…"
+          ></textarea>
+          <div class="reply-actions">
+            <span id="replyDestination" class="micro-copy"></span
+            ><button id="sendReply" class="primary">
+              Reply &amp; resume →
+            </button>
+          </div>
+        </section>
+        <section
+          id="interjectionPanel"
+          class="interjection-panel"
+          aria-label="Add your input"
+        >
+          <label for="interjection" class="composer-label"
+            >Add your perspective</label
+          ><textarea
+            id="interjection"
+            rows="2"
+            placeholder="Add a thought, correction, or new direction…"
+          ></textarea>
+          <div class="reply-actions">
+            <label class="destination-label"
+              >Send to
+              <select id="destination" aria-label="Interjection destination">
+                <option value="both">Both models</option>
+                <option value="ChatGPT">ChatGPT</option>
+                <option value="Claude">Claude</option>
+              </select></label
+            ><button id="interject" class="secondary">
+              Send &amp; pause ↗
+            </button>
+          </div>
+        </section>
+        <footer>
+          You stay in control. Review important output and supervise automatic
+          conversations.
+        </footer>
       </section>
-      <section class="panel">
-        <h2>Interject</h2>
-        <p class="hint">
-          Interjecting pauses the relay to avoid crossing messages.
-        </p>
-        <textarea
-          id="interjection"
-          rows="2"
-          placeholder="Add your own thought, correction, or instruction..."
-        ></textarea>
-        <div class="toolbar">
-          <select id="destination">
-            <option value="both">Both AIs</option>
-            <option value="ChatGPT">ChatGPT only</option>
-            <option value="Claude">Claude only</option></select
-          ><button id="interject" class="primary">Send interjection</button>
-        </div>
-      </section>
-      <div id="error" role="alert" hidden></div>
-      <footer>
-        Runs locally in your browser • No external servers • Website changes can
-        break capture or sending • Do not relay sensitive information without
-        reviewing it.
-      </footer>
     </main>
     <script src="dashboard.js"></script>
   </body>

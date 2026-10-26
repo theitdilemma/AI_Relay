@@ -16,6 +16,13 @@ const files = [
   'README.md',
   'LICENSE',
   'PRIVACY.md',
+  'docs/dashboard.png',
+  'icons/logo.svg',
+  'icons/icon-16.png',
+  'icons/icon-32.png',
+  'icons/icon-48.png',
+  'icons/icon-128.png',
+  'icons/icon-256.png',
 ];
 for (const file of files) {
   const target = path.join(output, file);

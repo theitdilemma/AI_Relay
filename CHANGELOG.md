@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0 — 2026-10-26
+
+- Adds `#userInput#`: either AI can ask a question and pause the relay; the dashboard sends your reply back to that AI and resumes without resetting the forward count.
+- Sends the Kelly Hansen / AI Relay introduction once per provider conversation. Chat URLs and visible setup messages prevent repeated introductions on follow-up turns and later runs in the same chat.
+- Separates `#stop#` (finished) from `#userInput#` (needs a decision). Instructions are part of the initial introduction rather than repeated on every forwarded message.
+- Replaces the stacked dashboard with compact left-side controls and a larger right-side conversation workspace, with responsive layouts and a dedicated reply-and-resume panel.
+- Adds a speech-bubble relay icon in all Chrome extension sizes and a dashboard favicon.
+- Preserves unanswered questions on failed replies and refuses to send an answer if the asking tab has changed conversations.
+
 ## 0.3.1 — 2026-10-26
 
 - Reinforces the `#stop#` instruction on every forwarded turn to prevent closing-acknowledgment loops.

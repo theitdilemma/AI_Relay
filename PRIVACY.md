@@ -4,7 +4,7 @@ AI Relay runs locally as a Chrome extension. It has no backend service, analytic
 
 ## What is stored
 
-Chrome local extension storage contains selected tab IDs, relay settings and state, the original prompt, a pending response, and up to 300 conversation-history entries. This storage is not Chrome Sync. Markdown exports are saved wherever you choose to download them.
+Chrome local extension storage contains selected tab IDs, relay settings and state, the original prompt, a pending response or question awaiting your input, and up to 300 conversation-history entries. It also remembers up to 200 provider conversation URLs that have already received the introduction. This storage is not Chrome Sync. Markdown exports are saved wherever you choose to download them.
 
 ## Where text goes
 
@@ -21,6 +21,6 @@ Starting or forwarding fills and submits the destination website's composer. Cha
 
 ## Removing data
 
-**Reset history** clears extension conversation history, the original prompt, and pending response. Settings and provider website chats remain. Removing the extension in `chrome://extensions` removes its local extension storage. Delete Markdown exports separately. Provider chat deletion is managed on each provider's website.
+**Clear history** clears extension conversation history, the original prompt, pending response, and unanswered input request. Settings, introduction tracking, and provider website chats remain. Introduction tracking is preserved so an existing chat does not get the setup message again. Removing the extension in `chrome://extensions` removes its local extension storage. Delete Markdown exports separately. Provider chat deletion is managed on each provider's website.
 
 Do not post private conversation exports in public bug reports.
