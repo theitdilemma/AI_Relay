@@ -22,6 +22,11 @@ async function safely(fn) {
     error(e);
   }
 }
+function scrollToLatest() {
+  const history = $('history');
+  history.scrollTop = history.scrollHeight;
+}
+window.addEventListener('resize', scrollToLatest);
 function render(s) {
   if (!s) return;
   state = s;
@@ -61,8 +66,6 @@ function render(s) {
   $('start').disabled = !!s.running || !!s.awaitingInput;
   $('stop').disabled = !s.running;
   const root = $('history');
-  const follow = root.scrollHeight - root.scrollTop - root.clientHeight < 80;
-  const previousScroll = root.scrollTop;
   root.replaceChildren();
   if (!s.history.length) {
     const d = document.createElement('div');
@@ -100,7 +103,8 @@ function render(s) {
     div.append(meta, body);
     root.append(div);
   }
-  root.scrollTop = follow ? root.scrollHeight : previousScroll;
+  scrollToLatest();
+  requestAnimationFrame(scrollToLatest);
   if (s.error) error(new Error(s.error));
   else clearError();
 }

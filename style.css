@@ -437,11 +437,12 @@ code {
   color: #a0adaa;
 }
 .history {
-  flex: 1;
-  min-height: 340px;
-  height: calc(100vh - 430px);
-  max-height: 900px;
+  flex: 0 0 auto;
+  min-height: 0;
+  height: clamp(340px, calc(100dvh - 430px), 700px);
   overflow-y: auto;
+  overscroll-behavior-y: contain;
+  overflow-anchor: none;
   padding: 24px 26px;
   scrollbar-width: thin;
   scrollbar-color: #d4dedb transparent;
@@ -665,9 +666,6 @@ footer {
   .workspace {
     grid-template-columns: 350px minmax(0, 1fr);
     gap: 30px;
-  }
-  .history {
-    min-height: 450px;
   }
 }
 @media (max-width: 1000px) {

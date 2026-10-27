@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.2 — 2026-10-26
+
+- Keeps conversation history in a bounded scroll pane instead of letting messages expand the dashboard.
+- Automatically scrolls to the latest message after each update and when the viewport changes.
+
 ## 0.4.1 — 2026-10-26
 
 - Fixes `Uncaught (in promise) Error: No current window` when opening the dashboard during installation or update.
