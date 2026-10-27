@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.6 — 2026-10-26
+
+- Credits Kelly Hansen as developer in the dashboard, README, package metadata, extension manifest, and MIT copyright notice.
+- Adds a local About & disclaimer page and a source disclaimer document covering free/open-source distribution, no warranty, liability limitations under applicable law, supervision, and independent third-party services.
+- Includes the disclaimer and About page in the downloadable extension package.
+
 ## 0.4.5 — 2026-10-26
 
 - Replaces the starting-model dropdown with a compact ⇆ button under Connections. The connection rows and thread participants reorder together.

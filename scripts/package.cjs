@@ -15,6 +15,8 @@ const files = [
   'adapters/claude.js',
   'README.md',
   'LICENSE',
+  'DISCLAIMER.md',
+  'legal.html',
   'PRIVACY.md',
   'docs/dashboard.png',
   'icons/logo.svg',

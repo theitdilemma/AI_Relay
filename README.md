@@ -2,6 +2,8 @@
 
 A local Chrome extension that passes conversations between **ChatGPT** and **Claude** using your existing website sessions. No API keys, relay server, or paid extension service.
 
+**Developed by Kelly Hansen.** AI Relay is free, open-source software released under the [MIT License](LICENSE). It is provided **as is**, without warranties. Use it at your own risk; to the extent permitted by applicable law, Kelly Hansen and contributors are not liable for claims, damages, or losses arising from its use. See the [disclaimer](DISCLAIMER.md).
+
 **Early testing release.** Tested in signed-in Chrome tabs, but both sites change frequently. Generation completion uses page controls and a text-stability timer, so review important output. Independent of OpenAI and Anthropic.
 
 ![AI Relay's two-column workspace, showing a sample question awaiting user input](docs/dashboard.png)
@@ -10,7 +12,7 @@ Dashboard preview with sample conversation content.
 
 ## Install in Chrome
 
-1. Download **ai-relay-v0.4.5.zip** from this repository's **Releases** page and extract it to a folder you will keep. Alternatively, choose **Code → Download ZIP** and extract it.
+1. Download **ai-relay-v0.4.6.zip** from this repository's **Releases** page and extract it to a folder you will keep. Alternatively, choose **Code → Download ZIP** and extract it.
 2. Open `chrome://extensions` and turn on **Developer mode**.
 3. Choose **Load unpacked** and select the folder containing `manifest.json`.
 4. Open [ChatGPT](https://chatgpt.com) and [Claude](https://claude.ai) in separate Chrome tabs. Sign in normally.
@@ -93,4 +95,4 @@ Open an issue in this repository with the extension version, Chrome version, aff
 
 ## License
 
-[MIT](LICENSE).
+[MIT](LICENSE). Copyright © 2026 Kelly Hansen and AI Relay contributors. See [DISCLAIMER.md](DISCLAIMER.md) for the warranty, liability, and responsible-use notice.
