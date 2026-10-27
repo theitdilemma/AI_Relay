@@ -215,7 +215,11 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     await ready;
     if (msg.type === 'GET') return state;
     if (msg.type === 'LIST_TABS')
-      return (await chrome.tabs.query({}))
+      return (
+        await chrome.tabs.query({
+          url: ['https://chatgpt.com/*', 'https://claude.ai/*'],
+        })
+      )
         .filter((t) =>
           /^https:\/\/(chatgpt\.com|claude\.ai)\//.test(t.url || ''),
         )

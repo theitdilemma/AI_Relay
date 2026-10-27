@@ -12,7 +12,7 @@ Dashboard preview with sample conversation content.
 
 ## Install in Chrome
 
-1. Download **ai-relay-v0.4.6.zip** from this repository's **Releases** page and extract it to a folder you will keep. Alternatively, choose **Code → Download ZIP** and extract it.
+1. Download **ai-relay-v0.4.7.zip** from this repository's **Releases** page and extract it to a folder you will keep. Alternatively, choose **Code → Download ZIP** and extract it.
 2. Open `chrome://extensions` and turn on **Developer mode**.
 3. Choose **Load unpacked** and select the folder containing `manifest.json`.
 4. Open [ChatGPT](https://chatgpt.com) and [Claude](https://claude.ai) in separate Chrome tabs. Sign in normally.
@@ -96,3 +96,7 @@ Open an issue in this repository with the extension version, Chrome version, aff
 ## License
 
 [MIT](LICENSE). Copyright © 2026 Kelly Hansen and AI Relay contributors. See [DISCLAIMER.md](DISCLAIMER.md) for the warranty, liability, and responsible-use notice.
+
+## Chrome Web Store submission
+
+See [the submission kit](store/SUBMISSION.md) for listing copy, privacy declarations, reviewer instructions, image assets, and the release checklist. The public privacy policy is [hosted on GitHub](https://github.com/theitdilemma/AI_Relay/blob/main/PRIVACY.md).

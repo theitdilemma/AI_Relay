@@ -29,6 +29,13 @@ assert.deepEqual(manifest.host_permissions, [
   'https://claude.ai/*',
 ]);
 const html = read('dashboard.html');
+assert.deepEqual(manifest.permissions, ['storage', 'scripting']);
+assert.ok(
+  html.includes(
+    'https://github.com/theitdilemma/AI_Relay/blob/main/PRIVACY.md',
+  ),
+  'Dashboard must expose the public privacy disclosure',
+);
 for (const [size, file] of Object.entries(manifest.icons || {})) {
   const png = fs.readFileSync(path.join(root, file));
   assert.equal(png.readUInt32BE(16), Number(size), `Wrong icon width: ${file}`);

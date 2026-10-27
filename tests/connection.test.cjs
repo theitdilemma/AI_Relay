@@ -43,6 +43,17 @@ function setup({
     action: { onClicked: event },
     tabs: {
       onRemoved: event,
+      query: async (options) => {
+        assert.deepEqual(Array.from(options.url), [
+          'https://chatgpt.com/*',
+          'https://claude.ai/*',
+        ]);
+        return [
+          { id: 123, url: 'https://chatgpt.com/c/test', title: 'ChatGPT' },
+          { id: 456, url: 'https://claude.ai/chat/test', title: 'Claude' },
+          { id: 789 }, // Sensitive properties of unrelated tabs are unavailable.
+        ];
+      },
       get: async (tabId) => ({
         url: tabId === 456 ? 'https://claude.ai/chat/test-chat' : url,
       }),
@@ -95,6 +106,14 @@ function setup({
     evaluate: (source) => vm.runInContext(source, context),
   };
 }
+test('lists supported tabs without broad tab metadata access', async () => {
+  const page = setup();
+  const tabs = await page.request({ type: 'LIST_TABS' });
+  assert.deepEqual(
+    Array.from(tabs, (tab) => tab.id),
+    [123, 456],
+  );
+});
 test('reconnects an already-open ChatGPT page after reinstall', async () => {
   const page = setup({ missing: true });
   await page.check();

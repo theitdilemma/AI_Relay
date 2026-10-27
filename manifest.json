@@ -2,11 +2,13 @@
   "manifest_version": 3,
   "name": "AI Relay",
   "author": "Kelly Hansen",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "Human-moderated local relay between ChatGPT and Claude browser tabs. No API keys.",
-  "permissions": ["tabs", "storage", "scripting"],
+  "permissions": ["storage", "scripting"],
   "host_permissions": ["https://chatgpt.com/*", "https://claude.ai/*"],
-  "background": { "service_worker": "background.js" },
+  "background": {
+    "service_worker": "background.js"
+  },
   "icons": {
     "16": "icons/icon-16.png",
     "32": "icons/icon-32.png",
@@ -15,7 +17,10 @@
   },
   "action": {
     "default_title": "Open AI Relay",
-    "default_icon": { "16": "icons/icon-16.png", "32": "icons/icon-32.png" }
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
   },
   "options_page": "dashboard.html",
   "content_scripts": [
@@ -29,5 +34,6 @@
       "js": ["adapters/claude.js", "content.js"],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "homepage_url": "https://github.com/theitdilemma/AI_Relay"
 }
