@@ -3,6 +3,7 @@ const DEFAULT = {
   claudeTab: null,
   running: false,
   automatic: true,
+  startingModel: 'ChatGPT',
   rounds: 0,
   maxRounds: 8,
   history: [],
@@ -10,6 +11,7 @@ const DEFAULT = {
   error: null,
   originalPrompt: '',
   claudeHasContext: false,
+  chatgptHasContext: false,
   stopReason: null,
   awaitingInput: null,
   introductions: {},
@@ -51,12 +53,14 @@ const targetFor = (platform) =>
 const limitReached = () =>
   state.maxRounds !== null && state.rounds >= state.maxRounds;
 const forwardText = (from, text) =>
-  from === 'ChatGPT' && !state.claudeHasContext && state.originalPrompt
-    ? `Original prompt from the user:\n\n${state.originalPrompt}\n\nChatGPT's response:\n\n${text}\n\nContinue the discussion using the original prompt and this response as context.`
+  !(from === 'ChatGPT' ? state.claudeHasContext : state.chatgptHasContext) &&
+  state.originalPrompt
+    ? `Original prompt from the user:\n\n${state.originalPrompt}\n\n${from}'s response:\n\n${text}\n\nContinue the discussion using the original prompt and this response as context.`
     : `Message from ${from}:\n\n${text}`;
 async function forwardTo(from, text) {
   await sendTo(targetFor(from), forwardText(from, text));
   if (from === 'ChatGPT') state.claudeHasContext = true;
+  else state.chatgptHasContext = true;
 }
 const record = (who, text, kind = 'message') => {
   state.history.push({ who, text, kind, at: new Date().toISOString() });
@@ -223,6 +227,8 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
       state.chatgptTab = msg.chatgptTab;
       state.claudeTab = msg.claudeTab;
       state.automatic = !!msg.automatic;
+      if (msg.startingModel === 'ChatGPT' || msg.startingModel === 'Claude')
+        state.startingModel = msg.startingModel;
       if (typeof msg.allowUserInput === 'boolean')
         state.allowUserInput = msg.allowUserInput;
       state.maxRounds =
@@ -242,19 +248,24 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
       state.error = null;
       state.originalPrompt = msg.text?.trim() || '';
       state.claudeHasContext = false;
+      state.chatgptHasContext = false;
       state.stopReason = null;
       state.awaitingInput = null;
       emit();
+      const firstTab =
+        state.startingModel === 'Claude' ? state.claudeTab : state.chatgptTab;
       if (msg.text?.trim()) {
         try {
-          await sendTo(state.chatgptTab, msg.text.trim());
+          await sendTo(firstTab, msg.text.trim());
+          if (state.startingModel === 'Claude') state.claudeHasContext = true;
+          else state.chatgptHasContext = true;
           record('You', msg.text.trim());
         } catch (e) {
           await stop();
           throw e;
         }
       } else {
-        await chrome.tabs.sendMessage(state.chatgptTab, { type: 'ARM' });
+        await chrome.tabs.sendMessage(firstTab, { type: 'ARM' });
       }
       return state;
     }
@@ -270,6 +281,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
       state.error = null;
       state.originalPrompt = '';
       state.claudeHasContext = false;
+      state.chatgptHasContext = false;
       state.awaitingInput = null;
       emit();
       return state;

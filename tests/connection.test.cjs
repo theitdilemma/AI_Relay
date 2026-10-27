@@ -20,6 +20,7 @@ function setup({
     injections = [],
     messageHandler;
   const sent = [];
+  const messages = [];
   const event = { addListener() {} };
   const chrome = {
     storage: {
@@ -46,6 +47,7 @@ function setup({
         url: tabId === 456 ? 'https://claude.ai/chat/test-chat' : url,
       }),
       sendMessage: async (tabId, msg) => {
+        messages.push({ tabId, ...msg });
         if (!connected)
           throw Error(
             'Could not establish connection. Receiving end does not exist.',
@@ -81,6 +83,7 @@ function setup({
     check: () => vm.runInContext('checkTab(123)', context),
     injections,
     sent,
+    messages,
     setUrl(value) {
       url = value;
     },
@@ -469,4 +472,48 @@ test('Stop cancels an input request as well as ending forwarding', async () => {
   assert.equal(result.running, false);
   assert.equal(result.awaitingInput, null);
   assert.equal(result.pending, null);
+});
+test('Claude-first start sends the prompt to Claude and gives ChatGPT the original context on first forward', async () => {
+  const page = setup();
+  await page.request({
+    type: 'CONFIG',
+    chatgptTab: 123,
+    claudeTab: 456,
+    automatic: true,
+    maxRounds: null,
+    startingModel: 'Claude',
+  });
+  const started = await page.request({
+    type: 'START',
+    text: 'Evaluate my idea.',
+  });
+  assert.equal(started.startingModel, 'Claude');
+  assert.equal(page.sent[0].tabId, 456);
+  assert.equal(started.claudeHasContext, true);
+  assert.equal(started.chatgptHasContext, false);
+  await page.request(
+    { type: 'RESPONSE', platform: 'Claude', text: 'Claude perspective.' },
+    { tab: { id: 456 } },
+  );
+  assert.equal(page.sent[1].tabId, 123);
+  assert.match(page.sent[1].text, /Evaluate my idea/);
+  assert.match(page.sent[1].text, /Claude's response:/);
+  await page.request(
+    { type: 'RESPONSE', platform: 'ChatGPT', text: 'ChatGPT perspective.' },
+    { tab: { id: 123 } },
+  );
+  assert.equal(page.sent[2].tabId, 456);
+  assert.ok(!page.sent[2].text.includes('Original prompt from the user'));
+});
+test('blank start arms the selected first model', async () => {
+  const page = setup({
+    savedState: { chatgptTab: 123, claudeTab: 456, startingModel: 'Claude' },
+  });
+  await page.request({ type: 'START', text: '' });
+  assert.equal(page.messages.find((m) => m.type === 'ARM').tabId, 456);
+});
+test('ChatGPT remains the default starting model', async () => {
+  const page = setup({ savedState: { chatgptTab: 123, claudeTab: 456 } });
+  await page.request({ type: 'START', text: 'Idea.' });
+  assert.equal(page.sent[0].tabId, 123);
 });

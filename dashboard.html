@@ -46,16 +46,24 @@
               <span aria-hidden="true">↻</span> Refresh
             </button>
           </div>
+          <div id="modelConnections" class="model-connections">
+            <label id="chatgptConnection" class="field"
+              ><span class="field-label"
+                ><span class="model-dot gpt-dot"></span> ChatGPT</span
+              ><select id="chatgpt" aria-label="ChatGPT tab"></select
+            ></label>
+            <label id="claudeConnection" class="field"
+              ><span class="field-label"
+                ><span class="model-dot claude-dot"></span> Claude</span
+              ><select id="claude" aria-label="Claude tab"></select
+            ></label>
+          </div>
           <label class="field"
-            ><span class="field-label"
-              ><span class="model-dot gpt-dot"></span> ChatGPT</span
-            ><select id="chatgpt" aria-label="ChatGPT tab"></select
-          ></label>
-          <label class="field"
-            ><span class="field-label"
-              ><span class="model-dot claude-dot"></span> Claude</span
-            ><select id="claude" aria-label="Claude tab"></select
-          ></label>
+            >Who starts?<select id="startingModel">
+              <option value="ChatGPT">ChatGPT → Claude</option>
+              <option value="Claude">Claude → ChatGPT</option>
+            </select></label
+          >
           <div class="open-links">
             <span>Need a new chat?</span
             ><button id="openChat" class="text-button">ChatGPT ↗</button

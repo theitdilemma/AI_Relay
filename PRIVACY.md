@@ -8,7 +8,7 @@ Chrome local extension storage contains selected tab IDs, relay settings and sta
 
 ## Where text goes
 
-Starting or forwarding fills and submits the destination website's composer. ChatGPT and Claude receive that text through your signed-in sessions and process it under their own policies. The first forward to Claude includes the original prompt and ChatGPT's reply. AI Relay does not make separate API requests or upload history to another server.
+Starting or forwarding fills and submits the destination website's composer. ChatGPT and Claude receive that text through your signed-in sessions and process it under their own policies. The first forward to the second model includes the original prompt and the response from the starting model. AI Relay does not make separate API requests or upload history to another server.
 
 ## Permissions
 

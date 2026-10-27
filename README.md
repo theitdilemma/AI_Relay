@@ -10,7 +10,7 @@ Dashboard preview with sample conversation content.
 
 ## Install in Chrome
 
-1. Download **ai-relay-v0.4.3.zip** from this repository's **Releases** page and extract it to a folder you will keep. Alternatively, choose **Code → Download ZIP** and extract it.
+1. Download **ai-relay-v0.4.4.zip** from this repository's **Releases** page and extract it to a folder you will keep. Alternatively, choose **Code → Download ZIP** and extract it.
 2. Open `chrome://extensions` and turn on **Developer mode**.
 3. Choose **Load unpacked** and select the folder containing `manifest.json`.
 4. Open [ChatGPT](https://chatgpt.com) and [Claude](https://claude.ai) in separate Chrome tabs. Sign in normally.
@@ -25,10 +25,10 @@ No Node.js installation or build step is needed to use the extension. This is a 
 2. Choose **Manual approval** for your first test. Automatic relay is the default on new installations.
 3. Enter your prompt in the dashboard. Leave AI website composers empty, or containing only the identical unsent prompt you want to retry.
 4. Set **Maximum forwards** (1–30), or check **Unlimited — continue until paused**.
-5. Click **Start**. ChatGPT receives the prompt first.
+5. Under **Connections → Who starts?**, choose **ChatGPT → Claude** or **Claude → ChatGPT**, then click **Start**. Your selected model receives the prompt first. The connection rows reorder to match your choice, which is saved for future runs.
 6. In manual mode, review each response and click **Forward to other AI**. Automatic mode forwards responses as they finish.
 
-Each model receives the Kelly Hansen / AI Relay introduction **once per provider conversation**, alongside its first message. The extension checks the chat URL and existing setup messages; it does not repeat the introduction on every turn or every new run in the same chat. Opening a new chat gives it a fresh introduction. Claude's first forwarded message includes your original prompt and ChatGPT's response. Later messages carry the next response without repeated setup instructions.
+Each model receives the Kelly Hansen / AI Relay introduction **once per provider conversation**, alongside its first message. The extension checks the chat URL and existing setup messages; it does not repeat the introduction on every turn or every new run in the same chat. Opening a new chat gives it a fresh introduction. The second model's first forwarded message includes your original prompt and the starting model's response, whichever model goes first. Later messages carry the next response without repeated setup instructions.
 
 The introduction explains two flags:
 
@@ -41,14 +41,14 @@ The sticky top bar has a **Stop** button to end forwarding and cancel a pending 
 
 | Control             | Behavior                                                                                       |
 | ------------------- | ---------------------------------------------------------------------------------------------- |
-| Start               | New run with ChatGPT first. Resets the counter but preserves dashboard history.                |
+| Start               | New run with the selected model first. Resets the counter but preserves dashboard history.     |
 | Stop / Pause        | Stops forwarding and disarms response capture.                                                 |
 | Forward to other AI | Sends a waiting response, including retrying a failed forward.                                 |
 | Interject           | Pauses and sends your message to one or both models. Does not automatically resume forwarding. |
 | Export Markdown     | Downloads locally stored conversation history.                                                 |
 | Reset history       | Clears extension history after confirmation. Does not delete provider chats.                   |
 
-A blank starting prompt arms ChatGPT for its next changed response. Starting again is a new run, not a replay of dashboard history.
+A blank starting prompt arms the selected starting model for its next changed response. Starting again is a new run, not a replay of dashboard history.
 
 ## Troubleshooting
 

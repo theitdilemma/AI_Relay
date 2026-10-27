@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.4 — 2026-10-26
+
+- Adds **Who starts?** under Connections to select ChatGPT → Claude or Claude → ChatGPT. The connection rows reorder to match, and the choice is saved when starting.
+- Sends the starting prompt to the selected model and includes the original prompt when its first response reaches the other model, in either direction.
+- Blank starts arm the selected model. ChatGPT remains the default.
+
 ## 0.4.3 — 2026-10-26
 
 - Adds a Stop button to the sticky top bar, accessible while scrolling. Stop also cancels a pending user-input request.

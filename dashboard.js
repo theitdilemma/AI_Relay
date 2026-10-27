@@ -145,10 +145,21 @@ async function configure() {
     chatgptTab: Number($('chatgpt').value) || null,
     claudeTab: Number($('claude').value) || null,
     automatic: $('mode').value === 'automatic',
+    startingModel: $('startingModel').value,
     allowUserInput: $('allowUserInput').checked,
     maxRounds: $('unlimited').checked ? null : Number($('maxRounds').value),
   });
 }
+function updateModelOrder() {
+  $('modelConnections').prepend(
+    $(
+      $('startingModel').value === 'Claude'
+        ? 'claudeConnection'
+        : 'chatgptConnection',
+    ),
+  );
+}
+$('startingModel').onchange = updateModelOrder;
 $('unlimited').onchange = () => {
   $('maxRounds').disabled = $('unlimited').checked;
 };
@@ -222,6 +233,9 @@ chrome.runtime.onMessage.addListener((msg) => {
 (async () => {
   render(await ask({ type: 'GET' }));
   $('mode').value = state.automatic ? 'automatic' : 'manual';
+  $('startingModel').value =
+    state.startingModel === 'Claude' ? 'Claude' : 'ChatGPT';
+  updateModelOrder();
   $('allowUserInput').checked = state.allowUserInput !== false;
   $('unlimited').checked = state.maxRounds === null;
   $('maxRounds').disabled = $('unlimited').checked;

@@ -206,6 +206,10 @@ h2 {
   gap: 7px;
   align-items: center;
 }
+.model-connections {
+  display: flex;
+  flex-direction: column;
+}
 .model-dot {
   display: inline-block;
   width: 7px;
