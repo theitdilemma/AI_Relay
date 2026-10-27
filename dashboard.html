@@ -24,6 +24,13 @@
           class="github-link"
           >GitHub <span aria-hidden="true">↗</span></a
         ><span id="status" class="pill">Ready</span>
+        <button
+          id="stopTop"
+          class="stop-button"
+          title="Stop forwarding and cancel a pending input request"
+        >
+          <span aria-hidden="true">■</span> Stop
+        </button>
       </div>
     </header>
     <main class="workspace">
@@ -95,8 +102,15 @@
                 >Unlimited conversation</span
               ></label
             >
+            <p class="micro-copy">The relay ends on <code>#stop#</code>.</p>
+            <label class="check-label"
+              ><input id="allowUserInput" type="checkbox" checked /><span
+                >Allow <code>#userInput#</code> requests</span
+              ></label
+            >
             <p class="micro-copy">
-              The relay pauses for your input and ends on <code>#stop#</code>.
+              Turn off to let the models continue without asking you. Applies
+              when you start the run.
             </p>
           </div>
         </details>

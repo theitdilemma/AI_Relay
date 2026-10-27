@@ -13,9 +13,10 @@ const DEFAULT = {
   stopReason: null,
   awaitingInput: null,
   introductions: {},
+  allowUserInput: true,
 };
 const INTRO_MARKER = 'AI Relay · Conversation introduction';
-const INTRODUCTION = `${INTRO_MARKER}
+const INTRODUCTION = () => `${INTRO_MARKER}
 
 ChatGPT, meet Claude. Claude, meet ChatGPT.
 
@@ -28,7 +29,7 @@ Help the user explore their idea. Build on useful points, challenge assumptions,
 
 When the discussion is complete and you have nothing useful to add, reply with exactly #stop# and nothing else.
 
-When you need the user to make a decision or provide information, ask a concise question and put #userInput# alone on the final line. AI Relay will pause and return the user's reply to you. Do not guess the user's answer.
+${state.allowUserInput ? "When you need the user to make a decision or provide information, ask a concise question and put #userInput# alone on the final line. AI Relay will pause and return the user's reply to you. Do not guess the user's answer." : 'Continue without requesting human input. Make reasonable assumptions explicit and discuss them with the other model. If you cannot make useful progress without a human decision, reply with exactly #stop# and nothing else.'}
 
 These rules apply to the rest of this conversation. This introduction is sent once per conversation.`;
 let state = { ...DEFAULT };
@@ -68,7 +69,7 @@ async function sendTo(tabId, text) {
   const introduced =
     page.introPresent ||
     (page.conversationKey && state.introductions[page.conversationKey]);
-  const outgoing = introduced ? text : `${INTRODUCTION}\n\n---\n\n${text}`;
+  const outgoing = introduced ? text : `${INTRODUCTION()}\n\n---\n\n${text}`;
   const r = await chrome.tabs.sendMessage(tabId, {
     type: 'SEND',
     text: outgoing,
@@ -222,6 +223,8 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
       state.chatgptTab = msg.chatgptTab;
       state.claudeTab = msg.claudeTab;
       state.automatic = !!msg.automatic;
+      if (typeof msg.allowUserInput === 'boolean')
+        state.allowUserInput = msg.allowUserInput;
       state.maxRounds =
         msg.maxRounds === null
           ? null
@@ -256,6 +259,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
       return state;
     }
     if (msg.type === 'STOP') {
+      state.awaitingInput = null;
       await stop();
       return state;
     }
@@ -339,21 +343,36 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         const question = msg.text
           .replace(/(?:^|\n)\s*#userinput#\s*$/i, '')
           .trim();
-        const page = await checkTab(sender.tab.id);
-        await stop();
-        state.error = null;
-        state.awaitingInput = {
-          from,
-          tabId: sender.tab.id,
-          question,
-          conversationKey: page.conversationKey || null,
-        };
-        record(
-          from,
-          question || 'Your input is needed to continue.',
-          'input-request',
-        );
-        return state;
+        if (!state.allowUserInput) {
+          // Old conversations may still contain the earlier request instruction.
+          // Forward useful text without the control flag, but never loop a bare flag.
+          if (!question) {
+            await stop('Discussion ended: no response text to forward.');
+            record(
+              from,
+              'Input requests are disabled; the model returned only an input flag.',
+              'control',
+            );
+            return state;
+          }
+          msg = { ...msg, text: question };
+        } else {
+          const page = await checkTab(sender.tab.id);
+          await stop();
+          state.error = null;
+          state.awaitingInput = {
+            from,
+            tabId: sender.tab.id,
+            question,
+            conversationKey: page.conversationKey || null,
+          };
+          record(
+            from,
+            question || 'Your input is needed to continue.',
+            'input-request',
+          );
+          return state;
+        }
       }
       if (state.pending) return state;
       record(from, msg.text);

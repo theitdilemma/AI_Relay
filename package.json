@@ -1,6 +1,6 @@
 {
   "name": "ai-relay",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "private": true,
   "description": "A local Chrome extension that relays conversations between ChatGPT and Claude.",
   "license": "MIT",

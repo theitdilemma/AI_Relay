@@ -67,6 +67,9 @@ a:hover {
   display: none !important;
 }
 .app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   height: 86px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -74,6 +77,13 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.stop-button {
+  background: #fff5f3;
+  border-color: #e8c9c4;
+  color: #a04b42;
+  font-size: 12px;
+  white-space: nowrap;
 }
 .brand {
   display: flex;
@@ -760,6 +770,21 @@ footer {
   }
 }
 @media (max-width: 440px) {
+  .brand h1 small {
+    display: none;
+  }
+  .header-actions {
+    gap: 8px;
+  }
+  .header-actions .pill {
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .stop-button {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
   .sidebar {
     grid-template-columns: 1fr;
   }

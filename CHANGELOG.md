@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.3 — 2026-10-26
+
+- Adds a Stop button to the sticky top bar, accessible while scrolling. Stop also cancels a pending user-input request.
+- Adds a saved **Allow #userInput# requests** setting, enabled by default and applied when starting a run.
+- With input requests disabled, new introductions omit that flag and tell models to continue with explicit assumptions. Old chats' flagged replies are forwarded without the flag or an input pause; a bare flag ends the run rather than looping an empty message.
+
 ## 0.4.2 — 2026-10-26
 
 - Keeps conversation history in a bounded scroll pane instead of letting messages expand the dashboard.

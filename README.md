@@ -10,7 +10,7 @@ Dashboard preview with sample conversation content.
 
 ## Install in Chrome
 
-1. Download **ai-relay-v0.4.2.zip** from this repository's **Releases** page and extract it to a folder you will keep. Alternatively, choose **Code → Download ZIP** and extract it.
+1. Download **ai-relay-v0.4.3.zip** from this repository's **Releases** page and extract it to a folder you will keep. Alternatively, choose **Code → Download ZIP** and extract it.
 2. Open `chrome://extensions` and turn on **Developer mode**.
 3. Choose **Load unpacked** and select the folder containing `manifest.json`.
 4. Open [ChatGPT](https://chatgpt.com) and [Claude](https://claude.ai) in separate Chrome tabs. Sign in normally.
@@ -36,6 +36,8 @@ The introduction explains two flags:
 - **`#userInput#`**: the model asks its question, then puts the flag alone on the final line (or replies with only the flag). Forwarding pauses, and the dashboard shows **Your turn** with a reply box. Click **Reply & resume** to send your answer back to the model that asked. The relay continues in its existing mode without resetting its forward count. If sending fails, the question and your answer stay available to retry. Return the AI tab to its original conversation if you navigated away.
 
 Models may not always follow the introduction; **Pause** remains available. Supervise important conversations.
+
+The sticky top bar has a **Stop** button to end forwarding and cancel a pending input request. In **Relay settings**, uncheck **Allow #userInput# requests** before starting to omit that instruction from new introductions. The setting is saved. Older chats may still remember their original introduction: if they return a flagged question, its text is forwarded without the flag or an input pause. A bare input flag ends the run because there is no discussion text to forward.
 
 | Control             | Behavior                                                                                       |
 | ------------------- | ---------------------------------------------------------------------------------------------- |

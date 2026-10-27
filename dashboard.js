@@ -65,6 +65,7 @@ function render(s) {
   $('forward').disabled = !s.pending;
   $('start').disabled = !!s.running || !!s.awaitingInput;
   $('stop').disabled = !s.running;
+  $('stopTop').disabled = !s.running && !s.awaitingInput && !s.pending;
   const root = $('history');
   root.replaceChildren();
   if (!s.history.length) {
@@ -144,6 +145,7 @@ async function configure() {
     chatgptTab: Number($('chatgpt').value) || null,
     claudeTab: Number($('claude').value) || null,
     automatic: $('mode').value === 'automatic',
+    allowUserInput: $('allowUserInput').checked,
     maxRounds: $('unlimited').checked ? null : Number($('maxRounds').value),
   });
 }
@@ -163,6 +165,7 @@ $('start').onclick = () =>
   });
 $('stop').onclick = () =>
   safely(async () => render(await ask({ type: 'STOP' })));
+$('stopTop').onclick = $('stop').onclick;
 $('reset').onclick = () =>
   safely(async () => {
     if (confirm('Clear AI Relay conversation history?'))
@@ -219,6 +222,7 @@ chrome.runtime.onMessage.addListener((msg) => {
 (async () => {
   render(await ask({ type: 'GET' }));
   $('mode').value = state.automatic ? 'automatic' : 'manual';
+  $('allowUserInput').checked = state.allowUserInput !== false;
   $('unlimited').checked = state.maxRounds === null;
   $('maxRounds').disabled = $('unlimited').checked;
   $('maxRounds').value = state.maxRounds ?? 8;

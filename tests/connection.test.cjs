@@ -402,3 +402,71 @@ test('failed introduction is not marked sent and is included on retry', async ()
   await page.request({ type: 'START', text: 'Idea.' });
   assert.match(page.sent[1].text, /Conversation introduction/);
 });
+test('input requests can be disabled in saved settings and are omitted from the introduction', async () => {
+  const page = setup();
+  await page.request({
+    type: 'CONFIG',
+    chatgptTab: 123,
+    claudeTab: 456,
+    automatic: true,
+    maxRounds: null,
+    allowUserInput: false,
+  });
+  const result = await page.request({
+    type: 'START',
+    text: 'Explore an idea.',
+  });
+  assert.equal(result.allowUserInput, false);
+  assert.ok(!page.sent[0].text.includes('#userInput#'));
+  assert.match(page.sent[0].text, /Continue without requesting human input/);
+});
+test('disabled input requests forward the discussion text without pausing or forwarding the flag', async () => {
+  const page = setup({
+    savedState: {
+      chatgptTab: 123,
+      claudeTab: 456,
+      running: true,
+      automatic: true,
+      allowUserInput: false,
+      maxRounds: null,
+    },
+  });
+  const result = await page.request(
+    {
+      type: 'RESPONSE',
+      platform: 'ChatGPT',
+      text: 'Could we assume a $500 budget?\n#userInput#',
+    },
+    { tab: { id: 123 } },
+  );
+  assert.equal(result.running, true);
+  assert.equal(result.awaitingInput, null);
+  assert.equal(page.sent.length, 1);
+  assert.ok(!page.sent[0].text.includes('#userInput#'));
+  assert.match(page.sent[0].text, /Could we assume a \$500 budget/);
+});
+test('disabled bare input flags end without forwarding or creating a waiting input panel', async () => {
+  const page = setup({
+    savedState: {
+      chatgptTab: 123,
+      claudeTab: 456,
+      running: true,
+      automatic: true,
+      allowUserInput: false,
+    },
+  });
+  const result = await page.request(
+    { type: 'RESPONSE', platform: 'ChatGPT', text: '#userInput#' },
+    { tab: { id: 123 } },
+  );
+  assert.equal(result.running, false);
+  assert.equal(result.awaitingInput, null);
+  assert.equal(page.sent.length, 0);
+});
+test('Stop cancels an input request as well as ending forwarding', async () => {
+  const page = setup({ savedState: waitingState });
+  const result = await page.request({ type: 'STOP' });
+  assert.equal(result.running, false);
+  assert.equal(result.awaitingInput, null);
+  assert.equal(result.pending, null);
+});
