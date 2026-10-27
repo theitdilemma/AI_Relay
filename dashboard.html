@@ -38,13 +38,22 @@
         <section class="panel connections" aria-labelledby="connections-title">
           <div class="sectionhead">
             <h2 id="connections-title">Connections</h2>
-            <button
-              id="refresh"
-              class="text-button"
-              title="Refresh available browser tabs"
-            >
-              <span aria-hidden="true">↻</span> Refresh
-            </button>
+            <div class="connection-actions">
+              <button
+                id="swapOrder"
+                class="swap-button"
+                title="Switch starting model"
+                aria-label="Switch starting model"
+              >
+                ⇆</button
+              ><button
+                id="refresh"
+                class="text-button"
+                title="Refresh available browser tabs"
+              >
+                <span aria-hidden="true">↻</span> Refresh
+              </button>
+            </div>
           </div>
           <div id="modelConnections" class="model-connections">
             <label id="chatgptConnection" class="field"
@@ -58,38 +67,10 @@
               ><select id="claude" aria-label="Claude tab"></select
             ></label>
           </div>
-          <label class="field"
-            >Who starts?<select id="startingModel">
-              <option value="ChatGPT">ChatGPT → Claude</option>
-              <option value="Claude">Claude → ChatGPT</option>
-            </select></label
-          >
           <div class="open-links">
             <span>Need a new chat?</span
             ><button id="openChat" class="text-button">ChatGPT ↗</button
             ><button id="openClaude" class="text-button">Claude ↗</button>
-          </div>
-        </section>
-        <section class="panel starter" aria-labelledby="start-title">
-          <div class="eyebrow">YOUR NEXT IDEA</div>
-          <h2 id="start-title">Start a conversation</h2>
-          <p class="hint">Give both perspectives something worth exploring.</p>
-          <label class="sr-only" for="topic">Your question or idea</label
-          ><textarea
-            id="topic"
-            rows="7"
-            placeholder="What would you like ChatGPT and Claude to work through?"
-          ></textarea>
-          <p class="micro-copy">
-            <span aria-hidden="true">✦</span> We introduce the models once per
-            chat.
-          </p>
-          <div class="start-actions">
-            <button id="start" class="primary">
-              Start conversation <span aria-hidden="true">→</span></button
-            ><button id="stop" class="secondary" title="Pause the relay">
-              Pause
-            </button>
           </div>
         </section>
         <details class="panel settings" open>
@@ -132,22 +113,59 @@
           <div>
             <div class="eyebrow">THE SHARED THREAD</div>
             <h2 id="conversation-title">
-              Conversation <span id="messageCount" class="count-badge">0</span>
+              <span id="conversationLabel">Conversation</span>
+              <span id="messageCount" class="count-badge">0</span>
             </h2>
           </div>
           <div class="conversation-tools">
+            <button id="newConversation" class="secondary small-button">
+              New conversation +
+            </button>
             <button id="export" class="secondary small-button">Export ↓</button
             ><button id="reset" class="text-button muted">Clear history</button>
           </div>
         </div>
         <div class="conversation-meta">
-          <span
+          <span id="participantOrder"
             ><span class="model-dot gpt-dot"></span> ChatGPT
             <span class="between" aria-hidden="true">⇄</span>
             <span class="model-dot claude-dot"></span> Claude</span
           ><span id="rounds">0 forwards</span>
         </div>
         <div id="error" role="alert" hidden></div>
+        <section
+          id="startPanel"
+          class="conversation-starter"
+          aria-labelledby="start-title"
+        >
+          <div class="starter-intro">
+            <img src="icons/logo.svg" width="54" height="54" alt="" />
+            <div class="eyebrow">ONE IDEA. TWO PERSPECTIVES.</div>
+            <h2 id="start-title">What are we thinking about?</h2>
+            <p class="hint">
+              Bring a question, a problem, or an idea. Let both perspectives
+              move it forward.
+            </p>
+          </div>
+          <label class="sr-only" for="topic">Your question or idea</label
+          ><textarea
+            id="topic"
+            rows="7"
+            placeholder="What would you like ChatGPT and Claude to work through?"
+          ></textarea>
+          <div class="start-actions">
+            <span id="firstModelHint" class="micro-copy"
+              >ChatGPT starts · Introduction sent once per chat</span
+            >
+            <div>
+              <button id="cancelStart" class="text-button muted" hidden>
+                Back to conversation</button
+              ><button id="start" class="primary">
+                Start conversation <span aria-hidden="true">→</span>
+              </button>
+            </div>
+          </div>
+        </section>
         <div
           id="history"
           class="history"

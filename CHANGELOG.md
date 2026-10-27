@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.5 — 2026-10-26
+
+- Replaces the starting-model dropdown with a compact ⇆ button under Connections. The connection rows and thread participants reorder together.
+- Moves the opening prompt into the Conversation panel. A successful Start replaces the prompt with the live thread; failed starts keep the draft visible for retry.
+- Adds New conversation and Back to conversation controls without deleting existing history.
+- Removes the separate left-side starter card and keeps the Stop button in the sticky header.
+
 ## 0.4.4 — 2026-10-26
 
 - Adds **Who starts?** under Connections to select ChatGPT → Claude or Claude → ChatGPT. The connection rows reorder to match, and the choice is saved when starting.

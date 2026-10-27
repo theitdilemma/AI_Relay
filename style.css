@@ -210,6 +210,69 @@ h2 {
   display: flex;
   flex-direction: column;
 }
+.connection-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.swap-button {
+  font-size: 23px;
+  line-height: 1;
+  background: #f1f6f3;
+  color: var(--accent);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+.conversation-starter {
+  flex: 1;
+  min-height: 550px;
+  padding: 42px clamp(24px, 4vw, 64px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.starter-intro {
+  text-align: center;
+  margin-bottom: 26px;
+}
+.starter-intro img {
+  border-radius: 15px;
+  margin-bottom: 18px;
+}
+.starter-intro h2 {
+  font-size: 25px;
+  letter-spacing: -0.8px;
+  margin-top: 10px;
+}
+.starter-intro .hint {
+  font-size: 12px;
+  margin: 12px auto 0;
+  max-width: 380px;
+}
+.conversation-starter textarea {
+  min-height: 190px;
+  background: #fff;
+  font-size: 14px;
+  line-height: 1.85;
+  padding: 18px 20px;
+}
+.conversation-starter .start-actions {
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.start-actions > div {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.conversation-starter .primary {
+  min-width: 180px;
+  gap: 22px;
+  flex: 0 0 auto;
+}
 .model-dot {
   display: inline-block;
   width: 7px;
@@ -271,19 +334,11 @@ input:disabled {
   letter-spacing: 1.5px;
   font-weight: 700;
 }
-.starter h2 {
-  margin-top: 7px;
-  font-size: 19px;
-  letter-spacing: -0.6px;
-}
 .hint {
   color: var(--muted);
   font-size: 11px;
   line-height: 1.6;
   margin: 9px 0 17px;
-}
-.starter textarea {
-  min-height: 162px;
 }
 .micro-copy {
   font-size: 10px;
@@ -710,6 +765,17 @@ footer {
   }
 }
 @media (max-width: 760px) {
+  .conversation-starter {
+    min-height: 450px;
+    padding: 30px 22px;
+  }
+  .conversation-starter .start-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .start-actions > div {
+    justify-content: flex-end;
+  }
   .app-header {
     height: 74px;
     padding: 0 17px;
@@ -730,13 +796,6 @@ footer {
   .sidebar {
     grid-template-columns: 1fr 1fr;
     gap: 14px;
-  }
-  .starter {
-    grid-column: 1/-1;
-    grid-row: 2;
-  }
-  .starter textarea {
-    min-height: 110px;
   }
   .local-note {
     grid-column: 1/-1;
@@ -774,6 +833,12 @@ footer {
   }
 }
 @media (max-width: 440px) {
+  .starter-intro h2 {
+    font-size: 22px;
+  }
+  .conversation-starter .primary {
+    min-width: 0;
+  }
   .brand h1 small {
     display: none;
   }
@@ -791,10 +856,6 @@ footer {
   }
   .sidebar {
     grid-template-columns: 1fr;
-  }
-  .starter {
-    grid-column: auto;
-    grid-row: auto;
   }
   .local-note {
     grid-column: auto;

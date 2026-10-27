@@ -2,6 +2,8 @@ const $ = (id) => document.getElementById(id);
 document.querySelector('h1 small').textContent =
   `v${chrome.runtime.getManifest().version}`;
 let state = null;
+let startingModel = 'ChatGPT';
+let composingNew = false;
 const ask = async (payload) => {
   const r = await chrome.runtime.sendMessage(payload);
   if (r?.error) throw Error(r.error);
@@ -30,6 +32,19 @@ window.addEventListener('resize', scrollToLatest);
 function render(s) {
   if (!s) return;
   state = s;
+  const showStarter =
+    composingNew ||
+    (!s.running && !s.history.length && !s.pending && !s.awaitingInput);
+  $('startPanel').hidden = !showStarter;
+  $('history').hidden = showStarter;
+  $('conversationLabel').textContent = showStarter
+    ? 'Start a conversation'
+    : 'Conversation';
+  $('messageCount').hidden = showStarter;
+  $('cancelStart').hidden = !s.history.length;
+  $('newConversation').hidden = showStarter;
+  $('newConversation').disabled =
+    !!s.running || !!s.awaitingInput || !!s.pending;
   $('status').textContent = s.running
     ? '● Running'
     : s.awaitingInput
@@ -38,12 +53,12 @@ function render(s) {
         ? '■ Finished'
         : 'Ⅱ Paused';
   $('status').title = s.stopReason || '';
-  $('completion').hidden = !s.stopReason;
+  $('completion').hidden = !s.stopReason || showStarter;
   $('completion').textContent = s.stopReason || '';
   $('status').classList.toggle('live', !!s.running);
   $('status').classList.toggle('waiting', !!s.awaitingInput && !s.running);
   $('inputRequest').hidden = !s.awaitingInput;
-  $('interjectionPanel').hidden = !!s.awaitingInput;
+  $('interjectionPanel').hidden = !!s.awaitingInput || showStarter;
   $('inputQuestion').textContent =
     s.awaitingInput?.question ||
     'The discussion is paused. Share the information or direction the models need.';
@@ -64,7 +79,6 @@ function render(s) {
       `${s.pending.from} → ${s.pending.from === 'ChatGPT' ? 'Claude' : 'ChatGPT'}`;
   $('forward').disabled = !s.pending;
   $('start').disabled = !!s.running || !!s.awaitingInput;
-  $('stop').disabled = !s.running;
   $('stopTop').disabled = !s.running && !s.awaitingInput && !s.pending;
   const root = $('history');
   root.replaceChildren();
@@ -78,7 +92,7 @@ function render(s) {
     heading.textContent = 'Two perspectives. One thread.';
     const description = document.createElement('p');
     description.textContent =
-      'Start with a question on the left. ChatGPT and Claude will work through it together, with you in control.';
+      'The relay is ready. The next captured response will appear here as the conversation continues.';
     const tags = document.createElement('div');
     tags.className = 'empty-tags';
     tags.textContent =
@@ -145,21 +159,45 @@ async function configure() {
     chatgptTab: Number($('chatgpt').value) || null,
     claudeTab: Number($('claude').value) || null,
     automatic: $('mode').value === 'automatic',
-    startingModel: $('startingModel').value,
+    startingModel,
     allowUserInput: $('allowUserInput').checked,
     maxRounds: $('unlimited').checked ? null : Number($('maxRounds').value),
   });
 }
 function updateModelOrder() {
   $('modelConnections').prepend(
-    $(
-      $('startingModel').value === 'Claude'
-        ? 'claudeConnection'
-        : 'chatgptConnection',
-    ),
+    $(startingModel === 'Claude' ? 'claudeConnection' : 'chatgptConnection'),
+  );
+  $('swapOrder').title =
+    `Switch to ${startingModel === 'Claude' ? 'ChatGPT' : 'Claude'} first`;
+  $('swapOrder').setAttribute('aria-label', $('swapOrder').title);
+  $('swapOrder').setAttribute(
+    'aria-pressed',
+    String(startingModel === 'Claude'),
+  );
+  $('firstModelHint').textContent =
+    `${startingModel} starts · Introduction sent once per chat`;
+  const other = startingModel === 'ChatGPT' ? 'Claude' : 'ChatGPT';
+  const firstDot = document.createElement('span');
+  firstDot.className = `model-dot ${startingModel === 'ChatGPT' ? 'gpt-dot' : 'claude-dot'}`;
+  const otherDot = document.createElement('span');
+  otherDot.className = `model-dot ${other === 'ChatGPT' ? 'gpt-dot' : 'claude-dot'}`;
+  const separator = document.createElement('span');
+  separator.className = 'between';
+  separator.textContent = '⇄';
+  separator.setAttribute('aria-hidden', 'true');
+  $('participantOrder').replaceChildren(
+    firstDot,
+    document.createTextNode(startingModel),
+    separator,
+    otherDot,
+    document.createTextNode(other),
   );
 }
-$('startingModel').onchange = updateModelOrder;
+$('swapOrder').onclick = () => {
+  startingModel = startingModel === 'ChatGPT' ? 'Claude' : 'ChatGPT';
+  updateModelOrder();
+};
 $('unlimited').onchange = () => {
   $('maxRounds').disabled = $('unlimited').checked;
 };
@@ -170,17 +208,35 @@ $('openClaude').onclick = () =>
   chrome.tabs.create({ url: 'https://claude.ai/' });
 $('start').onclick = () =>
   safely(async () => {
-    await configure();
-    const s = await ask({ type: 'START', text: $('topic').value.trim() });
-    render(s);
+    composingNew = true;
+    $('start').disabled = true;
+    try {
+      await configure();
+      const s = await ask({ type: 'START', text: $('topic').value.trim() });
+      composingNew = false;
+      render(s);
+    } catch (e) {
+      render(state);
+      throw e;
+    }
   });
-$('stop').onclick = () =>
+$('stopTop').onclick = () =>
   safely(async () => render(await ask({ type: 'STOP' })));
-$('stopTop').onclick = $('stop').onclick;
+$('newConversation').onclick = () => {
+  composingNew = true;
+  render(state);
+  $('topic').focus();
+};
+$('cancelStart').onclick = () => {
+  composingNew = false;
+  render(state);
+};
 $('reset').onclick = () =>
   safely(async () => {
-    if (confirm('Clear AI Relay conversation history?'))
+    if (confirm('Clear AI Relay conversation history?')) {
+      composingNew = false;
       render(await ask({ type: 'RESET' }));
+    }
   });
 $('sendReply').onclick = () =>
   safely(async () => {
@@ -233,8 +289,7 @@ chrome.runtime.onMessage.addListener((msg) => {
 (async () => {
   render(await ask({ type: 'GET' }));
   $('mode').value = state.automatic ? 'automatic' : 'manual';
-  $('startingModel').value =
-    state.startingModel === 'Claude' ? 'Claude' : 'ChatGPT';
+  startingModel = state.startingModel === 'Claude' ? 'Claude' : 'ChatGPT';
   updateModelOrder();
   $('allowUserInput').checked = state.allowUserInput !== false;
   $('unlimited').checked = state.maxRounds === null;
